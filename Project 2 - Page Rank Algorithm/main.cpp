@@ -1,3 +1,6 @@
+// Created by Tyler Landtroop on 4/9/2023
+
+
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -72,8 +75,7 @@ int main() {
   string start, end;
 
   // Get user inputs
-  cin >> numLines;
-  cin >> powerIterations;
+  cin >> numLines >> powerIterations;
 
   // Create a new graph object
   Graph graph;
@@ -81,8 +83,7 @@ int main() {
   // Inserts the user inputted edges into graph
   for (int i = 0; i < numLines; i++) {
     // Get the vertices
-    cin >> start;
-    cin >> end;
+    cin >> start >> end;
 
     // Insert vertices into graph
     graph.addEdge(start, end);
