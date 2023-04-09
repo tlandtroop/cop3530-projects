@@ -22,7 +22,7 @@ public:
 };
 
 void Graph::addEdge(const string &start, const string &end) {
-  // Adds the edge source "to" to "source" which represents the indegree of "source"
+  // Adds the edge from "end" to "start" which represents the indegree of "start"
   pages[end].push_back(start);
   // Adds 1 to the count of outdegrees which is used to calculate the ranks
   outdegrees[start]++;
