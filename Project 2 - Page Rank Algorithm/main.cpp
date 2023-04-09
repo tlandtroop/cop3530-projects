@@ -4,65 +4,92 @@
 #include <vector>
 using namespace std;
 
-class AdjacencyList {
+class Graph {
 private:
-  // Stores our pages in a map
-  map<string, vector<pair<string, double>>> pages;
+  // Stores the nodes in a graph
+  map<string, vector<string>> pages;
+  // Stores the number of out degrees a certain node has
+  map<string, int> outdegrees; 
+  // Stores the calculated ranks of the pages
+  map<string, double> ranks;
 
 public:
-  void addEdge(string &from, string &to);
-  void PageRank(int powerIterations);
+  void addEdge(const string &start, const string &end);
+  void computePageRank(int powerIterations);
 };
 
-void AdjacencyList::addEdge(string &from, string &to) {
-  // Adds an edge from the "from" page to the "to" page with a given weight
-  pages[from].push_back(make_pair(to, 1.0));
+void Graph::addEdge(const string &start, const string &end) {
+  // Adds the edge source "to" to "source" which represents the indegree of "source"
+  pages[end].push_back(start);
+  // Adds 1 to the count of outdegrees which is used to calculate the ranks
+  outdegrees[start]++;
+
+  // Edge Cases for empty values
+  if (outdegrees.find(start) == outdegrees.end()) {
+    outdegrees.insert(make_pair(end, 0));
+  }
+  if (pages.find(start) == pages.end()) {
+    pages.insert(make_pair(start, vector<string>{}));
+  }
 }
 
-void AdjacencyList::PageRank(int powerIterations) {
-  int n = pages.size();
-
-  map<string, double> ranks;
-  for (auto page : pages) {
-    ranks[page.first] = 1.0 / n;
+void Graph::computePageRank(int powerIterations) {
+  // Initialize the ranks to 1 / # of vertices
+  for (const auto& page : pages) {
+    ranks[page.first] = 1.0 / pages.size();
   }
-
-  for (int i = 0; i < powerIterations; i++) {
-    map<string, double> newRanks;
-
-    for (auto page : pages) {
-      double newRank = 0.0;
-      for (auto link : page.second) {
-        newRank += ranks[link.first] / link.second;
+  // Temporary map that holds the ranks of each page
+  map<string, double> newRank;
+  // Perform power iterations
+  for (int i = 1; i < powerIterations; ++i) {
+    newRank = ranks;
+    // Iterate through the graph
+    for (const auto& page : pages) {
+      double sum = 0.0;
+      // Calculate the rank for each page in the graph
+      for (const auto& link : page.second) {
+        // Page Rank formula
+        sum += ranks[link] * (1.0 / outdegrees.find(link)->second);
       }
-      newRanks[page.first] = newRank;
+      // Update the rank of the page
+      newRank[page.first] = sum;
     }
-
-    ranks = newRanks;
+    // Update the rank of the page
+    ranks = newRank;
   }
 
+
+  // Prints the page ranks to two decimal places
   for (auto page : ranks) {
-    cout << page.first << " " << fixed << setprecision(2) << page.second
-         << endl;
+    cout << page.first << " " << fixed << setprecision(2) << page.second << endl;
   }
+  
 }
 
 int main() {
+  // User input variables
   int numLines, powerIterations;
-  string from, to;
+  string start, end;
 
+  // Get user inputs
   cin >> numLines;
   cin >> powerIterations;
 
-  AdjacencyList graph;
+  // Create a new graph object
+  Graph graph;
 
+  // Inserts the user inputted edges into graph
   for (int i = 0; i < numLines; i++) {
-    cin >> from;
-    cin >> to;
-    graph.addEdge(from, to);
+    // Get the vertices
+    cin >> start;
+    cin >> end;
+
+    // Insert vertices into graph
+    graph.addEdge(start, end);
   }
 
-  graph.PageRank(powerIterations);
+  // Do power iterations
+  graph.computePageRank(powerIterations);
 
   return 0;
 }
