@@ -37,12 +37,13 @@ void Graph::addEdge(const string &start, const string &end) {
 }
 
 void Graph::computePageRank(int powerIterations) {
+  // Temporary map that holds the ranks of each page
+  map<string, double> newRank;
+
   // Initialize the ranks to 1 / # of vertices
   for (const auto& page : pages) {
     ranks[page.first] = 1.0 / pages.size();
   }
-  // Temporary map that holds the ranks of each page
-  map<string, double> newRank;
   // Perform power iterations
   for (int i = 1; i < powerIterations; ++i) {
     newRank = ranks;
@@ -52,7 +53,8 @@ void Graph::computePageRank(int powerIterations) {
       // Calculate the rank for each page in the graph
       for (const auto& link : page.second) {
         // Page Rank formula
-        sum += ranks[link] * (1.0 / outdegrees.find(link)->second);
+        double rank = ranks[link] * (1.0 / outdegrees.find(link)->second);
+        sum += rank;
       }
       // Update the rank of the page
       newRank[page.first] = sum;
